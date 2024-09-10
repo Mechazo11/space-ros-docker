@@ -137,6 +137,54 @@ RUN cd mongo-cxx-driver-r3.6.7/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCM
 
 ####  Space ROS workspace with additional packages   ####
 
+# Make sure the latest versions of packages are installed
+# Using Docker BuildKit cache mounts for /var/cache/apt and /var/lib/apt ensures that
+# the cache won't make it into the built image but will be maintained between steps.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  sudo apt-get update
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  sudo apt-get dist-upgrade -y
+RUN rosdep update
+
+# Install the various build and test tools
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  sudo apt install -y \
+  build-essential \
+  clang-format \
+  cmake \
+  git \
+  libbullet-dev \
+  python3-colcon-common-extensions \
+  python3-flake8 \
+  python3-pip \
+  python3-pytest-cov \
+  python3-rosdep \
+  python3-setuptools \
+  python3-vcstool \
+  wget
+
+# Install some pip packages needed for testing
+RUN python3 -m pip install -U \
+  argcomplete \
+  flake8-blind-except \
+  flake8-builtins \
+  flake8-class-newline \
+  flake8-comprehensions \
+  flake8-deprecated \
+  flake8-docstrings \
+  flake8-import-order \
+  flake8-quotes \
+  pytest-repeat \
+  pytest-rerunfailures \
+  pytest
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    sudo apt-get update -y && sudo apt-get install -y python3-rosinstall-generator
+
 # Clone all space-ros sources
 # In the earthly build, after building the packages, the src file was deleted
 RUN mkdir ${SPACEROS_DIR}/src \
@@ -144,19 +192,29 @@ RUN mkdir ${SPACEROS_DIR}/src \
 
 # Copy the o3de-robot-sim repos
 COPY --chown=${USERNAME}:${USERNAME} o3de-robot-sim.repos /tmp/
+COPY --chown=${USERNAME}:${USERNAME} excluded-pkgs.txt /tmp/
 RUN vcs import ${SPACEROS_DIR}/src < /tmp/o3de-robot-sim.repos 
+
+# Generate the repos file for o3de-robot-sim dependencies, excluding packages from Space ROS core
+RUN rosinstall_generator \
+  --rosdistro ${ROSDISTRO} \
+  --deps \
+  # --exclude-path ${SPACEROS_DIR}/src \
+  --exclude $(cat /tmp/excluded-pkgs.txt) -- \
+  -- $(cat /tmp/o3de-robot-sim.repos) \
+  > /tmp/o3de_robot_sim_generated_pkgs.repos
 
 # RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 #     --mount=type=cache,target=/var/lib/apt,sharing=locked \
 #     sudo apt-get update -y \
 #     && /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
-#     && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO}
+#     && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO} --skip-keys rti_connext_dds
 
+# Install system dependencies
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    sudo apt-get update -y \
-    && /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
-    && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO} --skip-keys rti_connext_dds
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash' \
+  && rosdep install --from-paths src --ignore-src --rosdistro ${ROSDISTRO} -r -y --skip-keys "console_bridge generate_parameter_library fastcdr fastrtps rti-connext-dds-5.3.1 urdfdom_headers rmw_connextdds ros_testing rmw_connextdds rmw_fastrtps_cpp rmw_fastrtps_dynamic_cpp composition demo_nodes_py lifecycle rosidl_typesupport_fastrtps_cpp rosidl_typesupport_fastrtps_c ikos diagnostic_aggregator diagnostic_updater joy qt_gui rqt_gui rqt_gui_py"
 
 # Build the demo_ws
 RUN /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash \
