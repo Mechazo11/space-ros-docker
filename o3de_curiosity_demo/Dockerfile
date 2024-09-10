@@ -85,7 +85,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   binutils \
   ca-certificates \
   clang \
-  cmake \
   file \
   firewalld \
   git \
@@ -194,6 +193,13 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     sudo apt-get update -y && sudo apt-get install -y python3-rosinstall-generator
 
+# TODO remove Install folder
+# TODO remove realtime_tools from src, install it from apt
+# TODO remove cyclone_dds from src and install it from apt
+# TODO add colcon ignore for test_rmw_implementation
+
+# colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-ignore test_rmw_implementation --event-handlers desktop_notification- status-
+
 # Clone all space-ros sources
 # In the earthly build, after building the packages, the src file was deleted
 RUN mkdir ${SPACEROS_DIR}/src \
@@ -250,51 +256,6 @@ RUN sudo DEBIAN_FRONTEND=noninteractive update-alternatives --install /usr/bin/c
     && sudo DEBIAN_FRONTEND=noninteractive update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 100
 
 # ####  Install Open 3D Engine   ####  
-# # Install dependencies
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    sudo apt-get update -y && sudo apt-get install -y \
-    bc \
-    bind9-utils \
-    binutils \
-    ca-certificates \
-    clang \
-    cmake \
-    file \
-    firewalld \
-    git \
-    git-lfs \
-    jq \
-    kbd \
-    kmod \
-    less \
-    lsb-release \
-    libglu1-mesa-dev \
-    libxcb-xinerama0 \
-    libfontconfig1-dev \
-    libcurl4-openssl-dev \
-    libnvidia-gl-470 \
-    libssl-dev \
-    libxcb-xkb-dev \
-    libxkbcommon-x11-dev \
-    libxkbcommon-dev \
-    libxcb-xfixes0-dev \
-    libxcb-xinput-dev \
-    libxcb-xinput0 \
-    libpcre2-16-0 \
-    lsof \
-    net-tools \
-    ninja-build \
-    pciutils \
-    python3-pip \
-    software-properties-common \
-    sudo \
-    tar \
-    unzip \
-    vim \
-    wget \
-    xz-utils
-    # && rm -rf /var/lib/apt/lists/* #  TODO need to figure out how to use this correctly
 
 # # Pull latest commit from development and build o3de. Note this does't build the whole engine
 WORKDIR ${HOME_DIR}
