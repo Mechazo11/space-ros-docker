@@ -225,24 +225,25 @@ WORKDIR ${SPACEROS_DIR}
 RUN /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash \
   && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --event-handlers desktop_notification- status-'
 
-# # Create O3DE/Projects and O3DE/Gems directory
-# RUN if [ -d "${O3DE_DIR}/Projects" ]; then rm -rf ${O3DE_DIR}/Gems; fi
-# RUN mkdir -p ${O3DE_DIR}/Projects
+# Create O3DE/Projects 
+RUN if [ -d "${O3DE_DIR}/Projects" ]; then rm -rf ${O3DE_DIR}/Gems; fi
+RUN mkdir -p ${O3DE_DIR}/Projects
 
-# RUN if [ -d "${O3DE_DIR}/Gems" ]; then rm -rf ${O3DE_DIR}/Gems; fi
-# RUN mkdir -p ${O3DE_DIR}/Gems
+# O3DE/Gems directory
+RUN if [ -d "${O3DE_DIR}/Gems" ]; then rm -rf ${O3DE_DIR}/Gems; fi
+RUN mkdir -p ${O3DE_DIR}/Gems
 
-# # Git clone RobotSim, NasaMarsRoverGem and MarsYardGem
-# WORKDIR ${O3DE_DIR}/Projects
-# RUN git clone --branch nasa_submission https://github.com/Mechazo11/RobotSim.git
+# Git clone RobotSim, NasaMarsRoverGem and MarsYardGem
+WORKDIR ${O3DE_DIR}/Projects
+RUN git clone --branch nasa_submission https://github.com/Mechazo11/RobotSim.git
 
-# WORKDIR ${O3DE_DIR}/Gems
-# RUN git clone --branch nasa_submission https://github.com/Mechazo11/NasaCuriosityRoverGem.git
-# RUN git clone --branch nasa_submission https://github.com/Mechazo11/MarsYardGem.git
+WORKDIR ${O3DE_DIR}/Gems
+RUN git clone --branch nasa_submission https://github.com/Mechazo11/NasaCuriosityRoverGem.git
+RUN git clone --branch nasa_submission https://github.com/Mechazo11/MarsYardGem.git
 
 # ## Symlink clang version to non-versioned clang and set cc to clang
-# # RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
-# #     && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 100
+RUN sudo DEBIAN_FRONTEND=noninteractive update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
+    && sudo DEBIAN_FRONTEND=noninteractive update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++ 100
 
 # ####  Install Open 3D Engine   ####  
 # # Install dependencies
