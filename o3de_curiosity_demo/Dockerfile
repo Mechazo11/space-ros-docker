@@ -54,8 +54,6 @@ ENV PROJECT_PATH=${O3DE_DIR}/Projects/${PROJECT_NAME}
 # Disable prompting during package installation
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ Etc/UTC
-ENV RMW_IMPLEMENTATION rmw_cyclonedds_cpp
-ENV RTI_NC_LICENSE_ACCEPTED yes
 
 ####  Dependencies   ####
 
@@ -128,6 +126,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
   sudo apt-get install libmongoc-dev -y
+
+# Experimental fix
+# RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+#     --mount=type=cache,target=/var/lib/apt,sharing=locked \
+#       sudo apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
+# ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 # Compile mongo cxx driver https://mongocxx.org/mongocxx-v3/installation/linux/
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -346,6 +350,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # # # Move to project directory
 WORKDIR ${PROJECT_PATH}
+
+RUN /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash \
+  && cmake -B build/linux -G "Ninja Multi-Config" -DLY_DISABLE_TEST_MODULES=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DLY_STRIP_DEBUG_SYMBOLS=ON -DAZ_USE_PHYSX5:BOOL=ON'
+
 
 # # Source space_ros workspace and build
 # RUN /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
