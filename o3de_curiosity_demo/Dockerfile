@@ -24,6 +24,8 @@
 
 FROM osrf/space-ros:latest
 
+# Note, the above image begins with user in the spaceros ws.
+
 # Define arguments used in the metadata definition
 ARG VCS_REF
 ARG VERSION="preview"
@@ -210,11 +212,23 @@ RUN rosinstall_generator \
 #     && /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
 #     && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO} --skip-keys rti_connext_dds
 
+# Extra packages that needs to be installed
+# TODO once build works and I can run the demo, update them to the repos package
+WORKDIR ${SPACEROS_DIR}/src
+RUN git clone --single-branch --branch ros2 https://github.com/ros/eigen_stl_containers.git
+# RUN git clone --single-branch --branch <branch_name> <repo.git>
+RUN git clone --single-branch --branch ros2 https://github.com/moveit/random_numbers.git
+RUN git clone --single-branch --branch main https://github.com/PickNikRobotics/cpp_polyfills.git
+
+
 # Install system dependencies
+WORKDIR ${SPACEROS_DIR}
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
   /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash' \
   && rosdep install --from-paths src --ignore-src --rosdistro ${ROSDISTRO} -r -y --skip-keys "console_bridge generate_parameter_library fastcdr fastrtps rti-connext-dds-5.3.1 urdfdom_headers rmw_connextdds ros_testing rmw_connextdds rmw_fastrtps_cpp rmw_fastrtps_dynamic_cpp composition demo_nodes_py lifecycle rosidl_typesupport_fastrtps_cpp rosidl_typesupport_fastrtps_c ikos diagnostic_aggregator diagnostic_updater joy qt_gui rqt_gui rqt_gui_py"
+
+
 
 # Build the demo_ws
 RUN /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash \
