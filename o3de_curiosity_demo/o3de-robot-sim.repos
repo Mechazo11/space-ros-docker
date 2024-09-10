@@ -2,7 +2,7 @@ repositories:
   demos:
     type: git
     url: https://github.com/Mechazo11/space-ros-demos.git
-    version: devel
+    version: nasa_submission
   gz_ros2_control:
     type: git
     url: https://github.com/ros-controls/gz_ros2_control.git
@@ -32,10 +32,6 @@ repositories:
     url: https://github.com/swri-robotics/gps_umd.git
     path: gps_msgs
     version: 113782d
-  simulation:
-    type: git
-    url: https://github.com/Mechazo11/space-ros-simulation.git
-    version: fix_chassis_dae
   gazebo_ros_pkgs:
     type: git
     url: https://github.com/ros-simulation/gazebo_ros_pkgs.git
