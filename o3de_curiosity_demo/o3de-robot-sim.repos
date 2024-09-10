@@ -100,4 +100,8 @@ repositories:
     type: git
     url: https://github.com/gazebosim/ros_gz.git
     version: humble
+  python_qt_binding:
+    type: git
+    url: https://github.com/ros-visualization/python_qt_binding.git
+    version: humble
   

@@ -218,7 +218,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # Build the demo_ws
 RUN /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash \
-  && colcon build --symlink-install
+  && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON --event-handlers desktop_notification- status-'
 
 # # Create O3DE/Projects and O3DE/Gems directory
 # RUN if [ -d "${O3DE_DIR}/Projects" ]; then rm -rf ${O3DE_DIR}/Gems; fi
