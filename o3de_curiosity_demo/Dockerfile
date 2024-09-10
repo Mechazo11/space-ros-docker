@@ -138,17 +138,13 @@ RUN tar -xzf mongo-cxx-driver-r3.6.7.tar.gz
 RUN cd mongo-cxx-driver-r3.6.7/build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && sudo cmake --build . --target EP_mnmlstc_core && cmake --build . && sudo cmake --build . --target install
 
 ####  Space ROS workspace with additional packages   ####
-
 # Make sure the latest versions of packages are installed
 # Using Docker BuildKit cache mounts for /var/cache/apt and /var/lib/apt ensures that
 # the cache won't make it into the built image but will be maintained between steps.
+RUN sudo DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ubuntuhandbook1/ppa
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
   sudo apt-get update
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-  --mount=type=cache,target=/var/lib/apt,sharing=locked \
-  sudo apt-get dist-upgrade -y
-RUN rosdep update
 
 # Install the various build and test tools
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -159,6 +155,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   cmake \
   git \
   libbullet-dev \
+  libqt4-dev \
+  libqt4-opengl-dev \
   python3-colcon-common-extensions \
   python3-flake8 \
   python3-pip \
@@ -183,6 +181,11 @@ RUN python3 -m pip install -U \
   pytest-rerunfailures \
   pytest
 
+# RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+#   --mount=type=cache,target=/var/lib/apt,sharing=locked \
+#   sudo apt-get dist-upgrade -y
+RUN rosdep update
+
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     sudo apt-get update -y && sudo apt-get install -y python3-rosinstall-generator
@@ -206,15 +209,7 @@ RUN rosinstall_generator \
   -- $(cat /tmp/o3de-robot-sim.repos) \
   > /tmp/o3de_robot_sim_generated_pkgs.repos
 
-# Extra packages that needs to be installed
-# TODO once build works and I can run the demo, update them to the repos package
-# WORKDIR ${SPACEROS_DIR}/src
-# RUN git clone --single-branch --branch ros2 https://github.com/ros/eigen_stl_containers.git
-# RUN git clone --single-branch --branch <branch_name> <repo.git>
-# RUN git clone --single-branch --branch ros2 https://github.com/moveit/random_numbers.git
-# RUN git clone --single-branch --branch main https://github.com/PickNikRobotics/cpp_polyfills.git
-
-# # Install system dependencies
+# Install system dependencies
 WORKDIR ${SPACEROS_DIR}
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
