@@ -51,9 +51,9 @@ ENV PROJECT_PATH=${O3DE_DIR}/Projects/${PROJECT_NAME}
 
 # Disable prompting during package installation
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Etc/UTC
-
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV TZ Etc/UTC
+ENV RMW_IMPLEMENTATION rmw_cyclonedds_cpp
+ENV RTI_NC_LICENSE_ACCEPTED yes
 
 ####  Dependencies   ####
 
@@ -152,12 +152,11 @@ RUN vcs import ${SPACEROS_DIR}/src < /tmp/o3de-robot-sim.repos
 #     && /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
 #     && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO}
 
-ARG RTI_NC_LICENSE_ACCEPTED=yes
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     sudo apt-get update -y \
     && /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
-    && DEBIAN_FRONTEND=noninteractive rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO}
+    && rosdep install --from-paths src --ignore-src -r -y --rosdistro ${ROSDISTRO}
 
 # Build the demo_ws
 RUN /bin/bash -c 'source ${SPACEROS_DIR}/install/setup.bash \
