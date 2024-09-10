@@ -104,4 +104,48 @@ repositories:
     type: git
     url: https://github.com/ros-visualization/python_qt_binding.git
     version: humble
+  eigen_stl_container:
+    type: git
+    url: https://github.com/ros/eigen_stl_containers.git
+    version: ros2
+  random_numbers:
+    type: git
+    url: https://github.com/moveit/random_numbers.git
+    version: ros2
+  cpp_polyfills:
+    type: git
+    url: https://github.com/PickNikRobotics/cpp_polyfills.git
+    version: main
+  ackermann_msgs:
+    type: git
+    url: https://github.com/ros-drivers/ackermann_msgs.git
+    version: ros2
+  angles:
+    type: git
+    url: https://github.com/ros/angles.git
+    version: ros2
+  backward_ros:
+    type: git
+    url: https://github.com/pal-robotics/backward_ros.git
+    version: foxy-devel
+  control_msgs:
+    type: git
+    url: https://github.com/ros-controls/control_msgs.git
+    version: humble
+  control_toolbox:
+    type: git
+    url: https://github.com/ros-controls/control_toolbox.git
+    version: ros2-master
+  graph_msgs:
+    type: git
+    url: todo
+    version: todo
+  ignition_cmake2_vendor:
+    type: git
+    url: todo
+    version: todo
+  ignition_math6_vendor:
+    type: git
+    url: todo
+    version: todo
   
