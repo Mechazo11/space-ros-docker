@@ -314,36 +314,27 @@ RUN git clone --single-branch -b development https://github.com/o3de/o3de-extras
 WORKDIR ${HOME_DIR}/o3de
 
 # # Register RobotSim with this engine
-# #RUN ${O3DE_ENGINE}/scripts/o3de.sh register --this-engine 
-# RUN ./scripts/o3de.sh register --this-engine 
-# # Register ROS 2 Gem, Husarion robot, Curiosity rover and Mars Yard gem
-# # RUN ${O3DE_ENGINE}/scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/ROS2 \
-# #     && ${O3DE_ENGINE}/scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/RosRobotSample \
-# #     && ${O3DE_ENGINE}/scripts/o3de.sh register --gem-path ${O3DE_DIR}/Gems/NasaCuriosityRoverGem \
-# #     && ${O3DE_ENGINE}/scripts/o3de.sh register --gem-path ${O3DE_DIR}/Gems/MarsYardGem
+RUN ./scripts/o3de.sh register --this-engine 
 
-# RUN ./scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/ROS2 \
-#     && ./scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/RosRobotSample \
-#     && ./scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/WarehouseSample \
-#     && ./scripts/o3de.sh register --gem-path ${O3DE_DIR}/Gems/NasaCuriosityRoverGem \
-#     && ./scripts/o3de.sh register --gem-path ${O3DE_DIR}/Gems/MarsYardGem
+# Register ROS 2 Gem, Husarion robot, Curiosity rover and Mars Yard gem
+RUN ./scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/ROS2 \
+    && ./scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/RosRobotSample \
+    && ./scripts/o3de.sh register --gem-path ${O3DE_EXTRAS}/Gems/WarehouseSample \
+    && ./scripts/o3de.sh register --gem-path ${O3DE_DIR}/Gems/NasaCuriosityRoverGem \
+    && ./scripts/o3de.sh register --gem-path ${O3DE_DIR}/Gems/MarsYardGem
 
 # # Register the Terrian gem which is located in o3de folder
-# RUN ./scripts/o3de.sh register --gem-path ${HOME_DIR}/o3de/Gems/Terrain
+RUN ./scripts/o3de.sh register --gem-path ${HOME_DIR}/o3de/Gems/Terrain
 
 # # Register RobotSim project.
 # # Project must be registered at the very end after all dependent gems are registered
-# #RUN {O3DE_ENGINE}/scripts/o3de.sh register --project-path ${O3DE_DIR}/Projects/${PROJECT_NAME}
-# RUN ./scripts/o3de.sh register --project-path ${O3DE_DIR}/Projects/${PROJECT_NAME}
+RUN ./scripts/o3de.sh register --project-path ${O3DE_DIR}/Projects/${PROJECT_NAME}
 
-# # Move to project directory
-# WORKDIR ${HOME_DIR}
-# # Run cmake and build project (Warning takes about 10-15 mins)
-
-# RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-#     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-#     sudo apt-get update -y && sudo apt-get install -y \
-#     libunwind-dev
+# TODO move this dependency up
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    sudo apt-get update -y && sudo apt-get install -y \
+    libunwind-dev
 
 # # Testing build by manually building out a ROS 2 Humble core
 # # RUN sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
@@ -354,12 +345,9 @@ WORKDIR ${HOME_DIR}/o3de
 # #     ros-humble-ros-base
 
 # # # Move to project directory
-# WORKDIR ${PROJECT_PATH}
+WORKDIR ${PROJECT_PATH}
 
-# # Activate Cyclone DDS
-# #  
-
-# # Source space_ros, movit2 and demo_ws
+# # Source space_ros workspace and build
 # RUN /bin/bash -c 'source "${SPACEROS_DIR}/install/setup.bash"' \
 #   && /bin/bash -c 'source "${MOVEIT2_DIR}/install/setup.bash"' \
 #   && /bin/bash -c 'source "${DEMO_DIR}/install/setup.bash"'
