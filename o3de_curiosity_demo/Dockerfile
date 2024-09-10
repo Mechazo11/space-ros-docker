@@ -247,71 +247,71 @@ RUN sudo DEBIAN_FRONTEND=noninteractive update-alternatives --install /usr/bin/c
 
 # ####  Install Open 3D Engine   ####  
 # # Install dependencies
-# RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-#     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-#     sudo apt-get update -y && sudo apt-get install -y \
-#     bc \
-#     bind9-utils \
-#     binutils \
-#     ca-certificates \
-#     clang \
-#     cmake \
-#     file \
-#     firewalld \
-#     git \
-#     git-lfs \
-#     jq \
-#     kbd \
-#     kmod \
-#     less \
-#     lsb-release \
-#     libglu1-mesa-dev \
-#     libxcb-xinerama0 \
-#     libfontconfig1-dev \
-#     libcurl4-openssl-dev \
-#     libnvidia-gl-470 \
-#     libssl-dev \
-#     libxcb-xkb-dev \
-#     libxkbcommon-x11-dev \
-#     libxkbcommon-dev \
-#     libxcb-xfixes0-dev \
-#     libxcb-xinput-dev \
-#     libxcb-xinput0 \
-#     libpcre2-16-0 \
-#     lsof \
-#     net-tools \
-#     ninja-build \
-#     pciutils \
-#     python3-pip \
-#     software-properties-common \
-#     sudo \
-#     tar \
-#     unzip \
-#     vim \
-#     wget \
-#     xz-utils
-#     # && rm -rf /var/lib/apt/lists/* #  TODO need to figure out how to use this correctly
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    sudo apt-get update -y && sudo apt-get install -y \
+    bc \
+    bind9-utils \
+    binutils \
+    ca-certificates \
+    clang \
+    cmake \
+    file \
+    firewalld \
+    git \
+    git-lfs \
+    jq \
+    kbd \
+    kmod \
+    less \
+    lsb-release \
+    libglu1-mesa-dev \
+    libxcb-xinerama0 \
+    libfontconfig1-dev \
+    libcurl4-openssl-dev \
+    libnvidia-gl-470 \
+    libssl-dev \
+    libxcb-xkb-dev \
+    libxkbcommon-x11-dev \
+    libxkbcommon-dev \
+    libxcb-xfixes0-dev \
+    libxcb-xinput-dev \
+    libxcb-xinput0 \
+    libpcre2-16-0 \
+    lsof \
+    net-tools \
+    ninja-build \
+    pciutils \
+    python3-pip \
+    software-properties-common \
+    sudo \
+    tar \
+    unzip \
+    vim \
+    wget \
+    xz-utils
+    # && rm -rf /var/lib/apt/lists/* #  TODO need to figure out how to use this correctly
 
 # # Pull latest commit from development and build o3de. Note this does't build the whole engine
-# WORKDIR ${HOME_DIR}
+WORKDIR ${HOME_DIR}
 
 # # Install o3de engine (automatically pulls last commit from "development" branch)
-# RUN git clone --single-branch -b development https://github.com/o3de/o3de.git \
-#     && cd o3de \
-#     && git lfs install \
-#     && git lfs pull \
-#     && python/get_python.sh
+RUN git clone --single-branch -b development https://github.com/o3de/o3de.git \
+    && cd o3de \
+    && git lfs install \
+    && git lfs pull \
+    && python/get_python.sh
 
 # # Install o3de-extras (automatically pulls last commit from "development" branch)
 # # Contains ROS 2 Gem and other relevant assets
 
-# WORKDIR ${HOME_DIR}
-# RUN git clone --single-branch -b development https://github.com/o3de/o3de-extras.git \
-#     && cd o3de-extras \
-#     && git lfs install \
-#     && git lfs pull
+WORKDIR ${HOME_DIR}
+RUN git clone --single-branch -b development https://github.com/o3de/o3de-extras.git \
+    && cd o3de-extras \
+    && git lfs install \
+    && git lfs pull
 
-# WORKDIR ${HOME_DIR}/o3de
+WORKDIR ${HOME_DIR}/o3de
 
 # # Register RobotSim with this engine
 # #RUN ${O3DE_ENGINE}/scripts/o3de.sh register --this-engine 
