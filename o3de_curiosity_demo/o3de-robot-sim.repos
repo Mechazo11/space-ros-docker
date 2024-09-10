@@ -167,7 +167,7 @@ repositories:
   octomap:
     type: git
     url: https://github.com/OctoMap/octomap.git
-    version: ros2
+    version: devel
   ompl:
     type: git
     url: https://github.com/ompl/ompl.git
